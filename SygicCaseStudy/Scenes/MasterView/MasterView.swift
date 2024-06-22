@@ -15,7 +15,6 @@ struct MasterView: View {
         LoadingView(content: {
             ScrollView {
                 Text("Your subscriptions")
-                    .foregroundStyle(.white)
                     .font(.title)
                 LazyVStack {
                     ForEach(viewModel.subscriptionItems) { subscription in

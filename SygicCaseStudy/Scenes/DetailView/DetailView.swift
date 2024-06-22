@@ -22,12 +22,14 @@ struct DetailView: View {
                             Image(uiImage: uiImage)
                         }
                         Text(viewModel.subscriptionItem.snippet.title)
-                            .foregroundStyle(.white)
                             .font(.title)
-                        Text(viewModel.subscriptionItem.snippet.description)
-                            .foregroundStyle(.white)
-                            .font(.subheadline)
-                        Text("Subscribed at: \(viewModel.subscriptionItem.snippet.publishedAt.convertDateFormater())")
+                        if viewModel.subscriptionItem.snippet.description != "" {
+                            Text(viewModel.subscriptionItem.snippet.description)
+                                .font(.subheadline)
+                        }
+                        if let subAt = viewModel.subscriptionItem.snippet.publishedAt.convertDateFormater() {
+                            Text("Subscribed at: \(subAt)")
+                        }
                         if let url = URL(string: "https://www.youtube.com/channel/\(viewModel.subscriptionItem.snippet.resourceID.channelID)") {
                             Link("Open in Safari", destination: url)
                                 .font(.headline)

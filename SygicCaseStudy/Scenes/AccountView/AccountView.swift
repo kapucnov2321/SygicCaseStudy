@@ -20,10 +20,8 @@ struct AccountView: View {
                         .padding()
                 }
                 Text(viewModel.user.profile?.name ?? "Name couldn't be retrieved")
-                    .foregroundStyle(.white)
                     .font(.title)
                 Text(viewModel.user.profile?.email ?? "Email couldn't be retrieved")
-                    .foregroundStyle(.white)
                     .font(.subheadline)
             }
             Spacer()

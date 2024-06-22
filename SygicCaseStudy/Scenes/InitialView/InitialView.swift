@@ -23,7 +23,6 @@ struct InitialView: View {
                     }
                 }
             Text("YouTube Stats")
-                .foregroundStyle(.white)
                 .font(.title)
                 .fontWeight(.medium)
         }

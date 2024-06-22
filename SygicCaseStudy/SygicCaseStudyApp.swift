@@ -21,7 +21,6 @@ struct SygicCaseStudyApp: App {
                 .onOpenURL { url in
                     GIDSignIn.sharedInstance.handle(url)
                 }
-                .preferredColorScheme(.dark)
         }
     }
 }

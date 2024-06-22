@@ -8,13 +8,12 @@
 import Foundation
 
 extension String {
-    func convertDateFormater() -> String {
+    func convertDateFormater() -> String? {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
 
         guard let date = dateFormatter.date(from: self) else {
-            assert(false, "no date from string")
-            return ""
+            return nil
         }
 
         dateFormatter.dateFormat = "dd.MM.yyyy HH:mm"

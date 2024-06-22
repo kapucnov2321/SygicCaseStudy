@@ -16,7 +16,6 @@ struct LoginView: View {
         VStack {
             Text("Login with Google")
                 .font(.title2)
-                .foregroundStyle(.white)
             GoogleSignInButton {
                 viewModel.signIn()
             }
