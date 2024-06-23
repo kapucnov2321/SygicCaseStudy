@@ -11,7 +11,7 @@ struct RootContentView: View {
     @StateObject var coordinator = RootCoordinator()
 
     var body: some View {
-        AppBackground {
+        Group {
             switch coordinator.rootView {
             case .login:
                 LoginView(viewModel: LoginViewModel(coordinator: coordinator))
@@ -21,6 +21,7 @@ struct RootContentView: View {
                 DashboardContentView(rootCoordinator: coordinator, user: user)
             }
         }
+        .modifier(AppBackground())
         .ignoresSafeArea()
     }
 }

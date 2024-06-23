@@ -16,13 +16,6 @@ class DashboardCoordinator: ObservableObject {
             subscriptionsNavigationPath.append(screen)
         }
     }
-
-    func clearNavigationStack(of destination: Destination) {
-        switch destination {
-        case .subscriptions:
-            subscriptionsNavigationPath.removeLast(subscriptionsNavigationPath.count)
-        }
-    }
     
     enum Page: Hashable {
         case detail(SubscriptionItem)

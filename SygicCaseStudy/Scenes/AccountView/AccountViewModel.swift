@@ -9,11 +9,7 @@ import Foundation
 import GoogleSignIn
 import GoogleSignInSwift
 
-protocol AccountViewModelProtocol {
-    func logout()
-}
-
-class AccountViewModel: AccountViewModelProtocol, ObservableObject {
+class AccountViewModel: ObservableObject {
     private let coordinator: RootCoordinator
     let user: GIDGoogleUser
 

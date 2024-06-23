@@ -8,11 +8,7 @@
 import Foundation
 import GoogleSignIn
 
-protocol RootViewModelProtocol {
-    func changeRootView(to rootView: RootCoordinator.View)
-}
-
-class InitialViewModel: RootViewModelProtocol, ObservableObject {
+class InitialViewModel: ObservableObject {
     private var coordinator: RootCoordinator
     
     init(coordinator: RootCoordinator) {

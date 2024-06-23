@@ -9,12 +9,7 @@ import UIKit
 import GoogleSignIn
 import GoogleSignInSwift
 
-protocol LoginViewModelProtocol {
-    func changeRootView(to rootView: RootCoordinator.View)
-    func signIn()
-}
-
-class LoginViewModel: LoginViewModelProtocol, ObservableObject {
+class LoginViewModel: ObservableObject {
     private var coordinator: RootCoordinator
     
     init(coordinator: RootCoordinator) {

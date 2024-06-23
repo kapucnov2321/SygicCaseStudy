@@ -77,6 +77,10 @@ struct Thumbnails: Codable {
 class Default: Codable {
     let url: String
     var imageData: Data?
+    
+    init(url: String) {
+        self.url = url
+    }
 }
 
 // MARK: - PageInfo

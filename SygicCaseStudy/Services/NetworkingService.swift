@@ -13,9 +13,13 @@ enum ResponseResult<T, E> {
     case error(E)
 }
 
-struct NetworkingService {
+class NetworkingService {
     
-    func getData<T: Codable, E: Codable>(for endpoint: YoutubeEndpoint, with user: GIDGoogleUser) async throws -> ResponseResult<T, E> {
+    static let shared = NetworkingService()
+    
+    private init() {}
+    
+    func getData<ResultType: Codable, ErrorType: Codable>(for endpoint: YoutubeEndpoint, with user: GIDGoogleUser) async throws -> ResponseResult<ResultType, ErrorType> {
         let user = try await user.refreshTokensIfNeeded()
         let request = try endpoint.generateRequest(user: user)
         
@@ -31,9 +35,9 @@ struct NetworkingService {
 
         switch response.statusCode {
         case 200:
-            return .data(try JSONDecoder().decode(T.self, from: data))
+            return .data(try JSONDecoder().decode(ResultType.self, from: data))
         case 403:
-            return .error(try JSONDecoder().decode(E.self, from: data))
+            return .error(try JSONDecoder().decode(ErrorType.self, from: data))
         default:
             throw NetworkError.unexpectedError
         }

@@ -7,14 +7,9 @@
 
 import SwiftUI
 
-struct AppBackground<Content: View>: View {
-    var content: () -> Content
+struct AppBackground: ViewModifier {
 
-       init(@ViewBuilder content: @escaping () -> Content) {
-       self.content = content
-   }
-
-    var body: some View {
+    func body(content: Content) -> some View {
         ZStack {
             LinearGradient(
                 gradient: Gradient(stops: [
@@ -41,16 +36,18 @@ struct AppBackground<Content: View>: View {
                     .frame(width: reader.size.width, height: reader.size.height / 2)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
             }
-            content()
+            content
         }
 
     }
 }
 
 #Preview {
-    AppBackground {
-        RootContentView()
+    VStack {
+        
     }
+    .frame(maxWidth: .infinity, maxHeight: .infinity)
+    .modifier(AppBackground())
 }
 
 struct Triangle: Shape {

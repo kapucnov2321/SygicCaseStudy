@@ -13,7 +13,6 @@ struct AccountView: View {
     
     var body: some View {
         VStack {
-            Spacer()
             VStack {
                 if viewModel.user.profile?.hasImage ?? false {
                     AsyncImage(url: viewModel.user.profile?.imageURL(withDimension: UInt(UIScreen.main.bounds.width) / 3))
@@ -24,7 +23,7 @@ struct AccountView: View {
                 Text(viewModel.user.profile?.email ?? "Email couldn't be retrieved")
                     .font(.subheadline)
             }
-            Spacer()
+            .frame(maxHeight: .infinity, alignment: .center)
             Button(
                 action: {
                     viewModel.logout()
@@ -42,11 +41,12 @@ struct AccountView: View {
             )
             .padding()
         }
+        .frame(maxHeight: .infinity)
+        .frame(maxWidth: .infinity)
     }
 }
 
 #Preview {
-    AppBackground {
-        AccountView(viewModel: AccountViewModel(coordinator: RootCoordinator(), user: GIDGoogleUser()))
-    }
+    AccountView(viewModel: AccountViewModel(coordinator: RootCoordinator(), user: GIDGoogleUser()))
+        .modifier(AppBackground())
 }

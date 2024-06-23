@@ -12,19 +12,17 @@ struct DashboardContentView: View {
     @StateObject var dashboardCoordinator: DashboardCoordinator = DashboardCoordinator()
     @ObservedObject var rootCoordinator: RootCoordinator
     let user: GIDGoogleUser
-
+    
     var body: some View {
         TabView{
             NavigationStack(path: $dashboardCoordinator.subscriptionsNavigationPath) {
-                AppBackground {
-                    MasterView(
-                        viewModel: MasterViewModel(
-                            coordinator: dashboardCoordinator,
-                            networkingService: NetworkingService(),
-                            user: user
-                        )
+                MasterView(
+                    viewModel: MasterViewModel(
+                        coordinator: dashboardCoordinator,
+                        networkingService: NetworkingService.shared,
+                        user: user
                     )
-                }
+                )
                 .navigationDestination(for: DashboardCoordinator.Page.self) { page in
                     switch page {
                     case .detail(let item):
@@ -35,14 +33,11 @@ struct DashboardContentView: View {
             .tabItem {
                 Label("Subscriptions", systemImage: "bell")
             }
-            AppBackground {
-                AccountView(viewModel: AccountViewModel(coordinator: rootCoordinator, user: user))
-            }
-            .tabItem {
-                Label("Account", systemImage: "person")
-            }
+            AccountView(viewModel: AccountViewModel(coordinator: rootCoordinator, user: user))
+                .tabItem {
+                    Label("Account", systemImage: "person")
+                }
         }
-        
     }
 }
 

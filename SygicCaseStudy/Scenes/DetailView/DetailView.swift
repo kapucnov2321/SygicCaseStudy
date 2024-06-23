@@ -14,34 +14,30 @@ struct DetailView: View {
     @ObservedObject var viewModel: DetailViewModel
     
     var body: some View {
-        AppBackground {
-            GeometryReader { geometry in
-                ScrollView {
-                    VStack(alignment: .center, spacing: 10) {
-                        if let imageData = viewModel.subscriptionItem.snippet.thumbnails.thumbnailsDefault.imageData, let uiImage = UIImage(data: imageData) {
-                            Image(uiImage: uiImage)
-                        }
-                        Text(viewModel.subscriptionItem.snippet.title)
-                            .font(.title)
-                        if viewModel.subscriptionItem.snippet.description != "" {
-                            Text(viewModel.subscriptionItem.snippet.description)
-                                .font(.subheadline)
-                        }
-                        if let subAt = viewModel.subscriptionItem.snippet.publishedAt.convertDateFormater() {
-                            Text("Subscribed at: \(subAt)")
-                        }
-                        if let url = URL(string: "https://www.youtube.com/channel/\(viewModel.subscriptionItem.snippet.resourceID.channelID)") {
-                            Link("Open in Safari", destination: url)
-                                .font(.headline)
-                                .foregroundStyle(.accentRed)
-                        }
+        GeometryReader { geometry in
+            ScrollView {
+                VStack(alignment: .center, spacing: 10) {
+                    Image(data: viewModel.subscriptionItem.snippet.thumbnails.thumbnailsDefault.imageData)
+                    Text(viewModel.subscriptionItem.snippet.title)
+                        .font(.title)
+                    if viewModel.subscriptionItem.snippet.description != "" {
+                        Text(viewModel.subscriptionItem.snippet.description)
+                            .font(.subheadline)
                     }
-                    .padding()
-                    .frame(width: geometry.size.width)
-                    .frame(minHeight: geometry.size.height)
+                    if let subAt = viewModel.convertServerToReadableTime() {
+                        Text("Subscribed at: \(subAt)")
+                    }
+                    if let url = URL(string: "https://www.youtube.com/channel/\(viewModel.subscriptionItem.snippet.resourceID.channelID)") {
+                        Link("Open in Safari", destination: url)
+                            .font(.headline)
+                            .foregroundStyle(.accentRed)
+                    }
                 }
+                .padding()
+                .frame(width: geometry.size.width)
+                .frame(minHeight: geometry.size.height)
             }
-
         }
+        .modifier(AppBackground())
     }
 }
