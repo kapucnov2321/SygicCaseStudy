@@ -8,20 +8,13 @@
 import Foundation
 import GoogleSignIn
 
-protocol MasterViewModelProtocol {
-    func fetchSubscriptions() async
-    func pageLoadSubscriptions(subscription: SubscriptionItem) async
-    func push(page: DashboardCoordinator.Page)
-    func reloadSubscriptions(withWipe: Bool) async
-}
-
 @MainActor
-class MasterViewModel: MasterViewModelProtocol, ObservableObject {
+class MasterViewModel: ObservableObject {
     @Published var sortSelection: SortType = .alphabetical
     @Published var errorMessage: String = ""
     @Published var searchText: String = ""
     @Published var isLoading: Bool = false
-    @Published var notFetched = true
+    @Published var didFetchDataFirstTime = false
 
     var subscriptionItemsResponse: [SubscriptionItem] = []
     private let coordinator: DashboardCoordinator
@@ -53,11 +46,11 @@ class MasterViewModel: MasterViewModelProtocol, ObservableObject {
         if withWipe {
             nextPageToken = nil
             subscriptionItemsResponse = []
-            notFetched = true
+            didFetchDataFirstTime = false
         }
     
         await fetchSubscriptions()
-        notFetched = false
+        didFetchDataFirstTime = true
     }
     
     func pageLoadSubscriptions(subscription: SubscriptionItem) async {
@@ -70,17 +63,14 @@ class MasterViewModel: MasterViewModelProtocol, ObservableObject {
         }
     }
     
-    func fetchSubscriptions() async {
+    private func fetchSubscriptions() async {
         do {
             isLoading = true
             let subscriptionsResult: ResponseResult<SubscriptionsResponse, SubscriptionsResponse.Error> = try await networkingService.getData(for: .subscriptions(nextPageToken, sortSelection.rawValue.lowercased()), with: user)
             switch subscriptionsResult {
             case .data(let response):
-                try await response.items.asyncForEach { item in
-                    let defaultThumbnail = item.snippet.thumbnails.thumbnailsDefault
-                    defaultThumbnail.imageData = try await networkingService.getImage(for: defaultThumbnail.url)
-                }
-                subscriptionItemsResponse.append(contentsOf: response.items)
+                let imagedItems = try await fetchSubscriptionImages(response: response)
+                subscriptionItemsResponse.append(contentsOf: imagedItems)
                 nextPageToken = response.nextPageToken
             case .error(let error):
                 errorMessage = error.error.message
@@ -89,5 +79,16 @@ class MasterViewModel: MasterViewModelProtocol, ObservableObject {
         } catch {
             errorMessage = error.localizedDescription
         }
+    }
+    
+    private func fetchSubscriptionImages(response: SubscriptionsResponse) async throws -> [SubscriptionItem] {
+        let responseItems = try await response.items.asyncMap { item in
+            var newItem = item
+            let defaultThumbnail = item.snippet.thumbnails.thumbnailsDefault
+            let imageData = try await networkingService.getImage(for: defaultThumbnail.url)
+            newItem.addImageData(data: imageData)
+            return newItem
+        }
+        return responseItems
     }
 }

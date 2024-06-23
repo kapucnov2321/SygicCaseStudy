@@ -12,27 +12,25 @@ struct MasterView: View {
     @StateObject var viewModel: MasterViewModel
 
     var body: some View {
-        LoadingView(content: {
+        ZStack {
             ScrollView {
-                Text("Your subscriptions")
-                    .font(.title)
                 LazyVStack {
                     ForEach(viewModel.subscriptionItems) { subscription in
                         HStack {
-                            if let imageData = subscription.snippet.thumbnails.thumbnailsDefault.imageData, let uiImage = UIImage(data: imageData)  {
-                                Image(uiImage: uiImage)
-                                    .clipShape(.rect(cornerRadius: 10))
-                                    .shadow(color: .white, radius: 5)
-                                    .padding(.horizontal, 20)
-                                    .padding(.vertical, 5)
-                            }
+                            Image(data: subscription.snippet.thumbnails.thumbnailsDefault.imageData)?
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 100, height: 100)
+                                .clipShape(.rect(cornerRadius: 10))
+                                .shadow(color: .white, radius: 5)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 5)
+
                             Text(subscription.snippet.title)
                                 .foregroundStyle(.white)
                                 .font(.headline)
-                                .onAppear {
-                                    Task {
-                                        await viewModel.pageLoadSubscriptions(subscription: subscription)
-                                    }
+                                .task {
+                                    await viewModel.pageLoadSubscriptions(subscription: subscription)
                                 }
                         }
                         .frame(maxWidth: .infinity, alignment: .leading)
@@ -45,7 +43,16 @@ struct MasterView: View {
                 }
                 .padding()
             }
-        }, isShown: $viewModel.notFetched)
+            if !viewModel.didFetchDataFirstTime {
+                VStack {
+                    ProgressView()
+                        .scaleEffect(2)
+                }
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .background(.white.opacity(0.3))
+            }
+        }
+        .navigationTitle("Your subscriptions")
         .searchable(text: $viewModel.searchText)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
@@ -65,16 +72,16 @@ struct MasterView: View {
                 await viewModel.reloadSubscriptions(withWipe: true)
             }
         }
-        .task {
-            if viewModel.notFetched {
-                await viewModel.reloadSubscriptions()
+        .onAppear {
+            Task {
+                if !viewModel.didFetchDataFirstTime {
+                    await viewModel.reloadSubscriptions()
+                }
             }
         }
     }
 }
 
 #Preview {
-    NavigationStack {
-        MasterView(viewModel: MasterViewModel(coordinator: DashboardCoordinator(), networkingService: NetworkingService(), user: GIDGoogleUser()))
-    }
+    MasterPreview()
 }

@@ -41,3 +41,7 @@ struct DetailView: View {
         .modifier(AppBackground())
     }
 }
+
+#Preview {
+    DetailView(viewModel: DetailViewModel(coordinator: DashboardCoordinator(), subscriptionItem: SubscriptionItem.generateRandomData()))
+}
