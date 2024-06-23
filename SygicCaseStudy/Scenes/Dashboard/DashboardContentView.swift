@@ -23,6 +23,7 @@ struct DashboardContentView: View {
                         user: user
                     )
                 )
+                .modifier(AppBackground())
                 .navigationDestination(for: DashboardCoordinator.Page.self) { page in
                     switch page {
                     case .detail(let item):
@@ -34,6 +35,7 @@ struct DashboardContentView: View {
                 Label("Subscriptions", systemImage: "bell")
             }
             AccountView(viewModel: AccountViewModel(coordinator: rootCoordinator, user: user))
+                .modifier(AppBackground())
                 .tabItem {
                     Label("Account", systemImage: "person")
                 }
